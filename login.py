@@ -3,17 +3,32 @@ from playwright.sync_api import sync_playwright
 
 STATE_FILE = "state.json"
 
+def get_playwright_proxy():
+    proxy_url = (
+        os.environ.get("PLAYWRIGHT_PROXY")
+        or os.environ.get("HTTPS_PROXY")
+        or os.environ.get("HTTP_PROXY")
+        or os.environ.get("https_proxy")
+        or os.environ.get("http_proxy")
+    )
+    if not proxy_url:
+        return None
+    return {"server": proxy_url}
+
 def login():
     print("准备启动浏览器...")
     with sync_playwright() as p:
         # 打开 Chromium 浏览器，非无头模式（需要您看到界面扫码）
         browser = p.chromium.launch(headless=False)
+        proxy = get_playwright_proxy()
+        if proxy:
+            print(f"已为 Playwright 显式启用代理：{proxy['server']}")
         
         if os.path.exists(STATE_FILE):
             print(f"找到已有的 {STATE_FILE}，将加载现有登录状态尝试打开...")
-            context = browser.new_context(storage_state=STATE_FILE)
+            context = browser.new_context(storage_state=STATE_FILE, proxy=proxy)
         else:
-            context = browser.new_context()
+            context = browser.new_context(proxy=proxy)
             
         page = context.new_page()
         

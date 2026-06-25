@@ -98,6 +98,33 @@ python publish.py
 
 这样就可以灵活控制每次的发布量，完美应对番茄平台的每日发布上限。输入完毕后就可以双手离开键盘，喝着咖啡欣赏它像一个没有感情的打字机般疯狂投递了。
 
+### 4. 命令行模式（给自动化调用）
+
+命令行模式不会猜测业务参数，必须显式指定书名、章节数、分卷和定时时间：
+
+```bash
+conda run -n fanqie python publish.py \
+  --cli \
+  --book 死人请柬 \
+  --count 2 \
+  --volume 1 \
+  --schedule-time 18:00
+```
+
+测试时可追加 `--dry-run`，只校验队列和参数，不启动浏览器、不移动文件：
+
+```bash
+conda run -n fanqie python publish.py \
+  --cli \
+  --book 死人请柬 \
+  --count 1 \
+  --volume 1 \
+  --schedule-time 18:00 \
+  --dry-run
+```
+
+默认发布动作会在点击【下一步】后选择【仅基础检测】；发布设置中选择【是否使用 AI：否】，开启定时发布并填写指定时间，最后点击【确认发布】。
+
 ---
 
 ## 交流与支持 💬
